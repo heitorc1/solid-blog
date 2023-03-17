@@ -1,7 +1,6 @@
-import { json, Request, Response, Router } from "express";
-import createPostDto from "../repositories/DTO/CreatePostDTO";
+import { Request, Response, Router } from "express";
+import { z } from "zod";
 import postRepository from "../repositories/post";
-import updatePostDto from "../repositories/DTO/UpdatePostDTO";
 
 const postRouter = Router();
 
@@ -15,8 +14,15 @@ postRouter.post("/", async (req: Request, res: Response) => {
   const body = req.body;
 
   try {
-    createPostDto.parse(body);
+    z.object({
+      title: z.string(),
+      content: z.string(),
+      published: z.boolean(),
+      userId: z.number(),
+    }).parse(body);
+
     const post = await postRepository.create(body);
+
     res.json(post);
   } catch (error) {
     res.json(error);
@@ -28,7 +34,12 @@ postRouter.put("/:id", async (req: Request, res: Response) => {
   const body = req.body;
 
   try {
-    updatePostDto.parse(body);
+    z.object({
+      title: z.string().optional(),
+      content: z.string().optional(),
+      published: z.boolean().optional(),
+    }).parse(body);
+
     const post = await postRepository.update(parseInt(id), body);
     return res.json(post);
   } catch (error) {

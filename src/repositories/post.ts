@@ -1,5 +1,5 @@
 import { Post, PrismaClient } from "@prisma/client";
-import { IPost } from "../interfaces/post";
+import { CreatePost, ListPost } from "../interfaces/post";
 
 class PostRepository {
   private prisma: PrismaClient;
@@ -8,21 +8,38 @@ class PostRepository {
     this.prisma = new PrismaClient();
   }
 
-  async index(): Promise<Post[]> {
-    return this.prisma.post.findMany({});
+  async index(): Promise<ListPost[]> {
+    return this.prisma.post.findMany({
+      select: {
+        title: true,
+        content: true,
+        published: true,
+        user: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
   }
 
-  async create(post: IPost): Promise<Post> {
+  async create(post: CreatePost): Promise<Post> {
     return this.prisma.post.create({
       data: {
         title: post.title,
         content: post.content,
         published: post.published,
+        user: {
+          connect: {
+            id: post.userId,
+          },
+        },
       },
     });
   }
 
-  async update(id: number, post: Partial<IPost>): Promise<Post> {
+  async update(id: number, post: Partial<CreatePost>): Promise<Post> {
     return this.prisma.post.update({
       data: {
         title: post.title,

@@ -1,16 +1,15 @@
-import { Request, Response } from "express";
 import express from "express";
-import * as dotenv from "dotenv";
 import postRouter from "./routes/post";
-
-dotenv.config();
+import userRouter from "./routes/user";
 
 const app = express();
 const port = 8080;
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use("/posts", postRouter);
+app.use("/users", userRouter);
 
 app.listen(port, () => {
   console.log(`server running on port ${port}`);

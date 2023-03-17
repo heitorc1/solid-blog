@@ -1,4 +1,4 @@
-export default class InvalidLogin extends Error {
+export default class InvalidPostError extends Error {
   private statusCode: number;
 
   constructor(message: string, statusCode: number) {

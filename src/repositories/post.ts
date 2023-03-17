@@ -8,8 +8,11 @@ class PostRepository {
     this.prisma = new PrismaClient();
   }
 
-  async index(): Promise<ListPost[]> {
-    return this.prisma.post.findMany({
+  async index(page: number, perPage: number): Promise<ListPost> {
+    const totalPosts = await this.prisma.post.count();
+    const posts = await this.prisma.post.findMany({
+      skip: (page - 1) * perPage,
+      take: perPage,
       select: {
         title: true,
         content: true,
@@ -22,6 +25,15 @@ class PostRepository {
         },
       },
     });
+
+    return {
+      data: posts,
+      pagination: {
+        page: page,
+        perPage: perPage,
+        total: totalPosts,
+      },
+    };
   }
 
   async create(post: CreatePost): Promise<Post> {
@@ -54,6 +66,10 @@ class PostRepository {
     return this.prisma.post.delete({
       where: { id },
     });
+  }
+
+  async findPostById(id: number): Promise<Post | null> {
+    return this.prisma.post.findFirst({ where: { id } });
   }
 }
 

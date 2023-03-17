@@ -1,3 +1,15 @@
+import { Pagination } from "./pagination";
+
+export interface Post {
+  title: string;
+  content: string;
+  published: boolean;
+  user: {
+    name: string;
+    email: string;
+  };
+}
+
 export interface CreatePost {
   title: string;
   content: string;
@@ -6,11 +18,6 @@ export interface CreatePost {
 }
 
 export interface ListPost {
-  title: string;
-  content: string;
-  published: boolean;
-  user: {
-    name: string;
-    email: string;
-  };
+  data: Post[];
+  pagination: Pagination;
 }

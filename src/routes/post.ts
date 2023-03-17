@@ -1,13 +1,28 @@
 import { Request, Response, Router } from "express";
 import { z } from "zod";
-import postRepository from "../repositories/post";
+import postService from "../services/post";
 
 const postRouter = Router();
 
 postRouter.get("/", async (req: Request, res: Response) => {
-  const posts = await postRepository.index();
+  const params = req.query;
 
-  res.json(posts);
+  try {
+    const validatedData = z
+      .object({
+        page: z.string().optional(),
+        perPage: z.string().optional(),
+      })
+      .parse(params);
+
+    const posts = await postService.index(
+      validatedData.page ? parseInt(validatedData.page) : undefined,
+      validatedData.perPage ? parseInt(validatedData.perPage) : undefined
+    );
+    res.json(posts);
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 postRouter.post("/", async (req: Request, res: Response) => {
@@ -21,7 +36,7 @@ postRouter.post("/", async (req: Request, res: Response) => {
       userId: z.number(),
     }).parse(body);
 
-    const post = await postRepository.create(body);
+    const post = await postService.create(body);
 
     res.json(post);
   } catch (error) {
@@ -40,7 +55,7 @@ postRouter.put("/:id", async (req: Request, res: Response) => {
       published: z.boolean().optional(),
     }).parse(body);
 
-    const post = await postRepository.update(parseInt(id), body);
+    const post = await postService.update(parseInt(id), body);
     return res.json(post);
   } catch (error) {
     return res.json(error);
@@ -51,7 +66,7 @@ postRouter.delete("/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
-    await postRepository.delete(parseInt(id));
+    await postService.delete(parseInt(id));
     return res.json({ message: "Post deleted successfully!" });
   } catch (error) {
     res.json(error);

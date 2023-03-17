@@ -2,7 +2,7 @@ import userRepository from "../repositories/user";
 import bcrypt from "bcrypt";
 import { ILogin, IUser } from "../interfaces/user";
 import { User } from "@prisma/client";
-import InvalidLogin from "../errors/InvalidLogin";
+import InvalidLoginError from "../errors/InvalidLoginError";
 import { sign } from "jsonwebtoken";
 import { JWT_SECRET } from "../envs";
 
@@ -13,7 +13,7 @@ class UserService {
     );
 
     if (userAlreadyExists) {
-      throw new InvalidLogin("Email already registered", 404);
+      throw new InvalidLoginError("Email already registered", 404);
     }
 
     const hashedPassword = await bcrypt.hash(params.password, 10);
@@ -28,13 +28,13 @@ class UserService {
     const user = await userRepository.getPassword(params.email);
 
     if (!user) {
-      throw new InvalidLogin("User not found", 404);
+      throw new InvalidLoginError("User not found", 404);
     }
 
     const isSamePassword = await bcrypt.compare(params.password, user.password);
 
     if (!isSamePassword) {
-      throw new InvalidLogin("Incorrect password", 404);
+      throw new InvalidLoginError("Incorrect password", 404);
     }
 
     const token = sign(

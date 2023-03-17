@@ -1,5 +1,5 @@
 import { Post, PrismaClient } from "@prisma/client";
-import { CreatePost, ListPost } from "../interfaces/post";
+import { CreatePost, ListPost, IPost } from "../interfaces/post";
 
 class PostRepository {
   private prisma: PrismaClient;
@@ -68,8 +68,32 @@ class PostRepository {
     });
   }
 
-  async findPostById(id: number): Promise<Post | null> {
-    return this.prisma.post.findFirst({ where: { id } });
+  async findPostById(id: number): Promise<IPost | null> {
+    return this.prisma.post.findFirst({
+      where: { id },
+      select: {
+        title: true,
+        content: true,
+        published: true,
+        user: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+        comments: {
+          select: {
+            user: {
+              select: {
+                name: true,
+              },
+            },
+            text: true,
+            createdAt: true,
+          },
+        },
+      },
+    });
   }
 }
 

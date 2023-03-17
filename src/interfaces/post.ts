@@ -1,6 +1,7 @@
 import { Pagination } from "./pagination";
+import { IComment } from "./comment";
 
-export interface Post {
+export interface IPost {
   title: string;
   content: string;
   published: boolean;
@@ -8,6 +9,7 @@ export interface Post {
     name: string;
     email: string;
   };
+  comments?: IComment[];
 }
 
 export interface CreatePost {
@@ -18,6 +20,6 @@ export interface CreatePost {
 }
 
 export interface ListPost {
-  data: Post[];
+  data: IPost[];
   pagination: Pagination;
 }

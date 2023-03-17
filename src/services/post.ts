@@ -1,5 +1,8 @@
+import { Comments } from "@prisma/client";
 import InvalidPostError from "../errors/InvalidPostError";
-import { CreatePost, ListPost } from "../interfaces/post";
+import { CreateComment } from "../interfaces/comment";
+import { CreatePost, IPost, ListPost } from "../interfaces/post";
+import commentRepository from "../repositories/comments";
 import postRepository from "../repositories/post";
 
 class PostService {
@@ -25,6 +28,19 @@ class PostService {
       throw new InvalidPostError("Post not found", 404);
     }
     postRepository.delete(id);
+  }
+
+  async getPostById(id: number): Promise<IPost> {
+    const post = await postRepository.findPostById(id);
+    if (!post) {
+      throw new InvalidPostError("Post not found", 404);
+    }
+    return post;
+  }
+
+  async createComment(id: number, params: CreateComment): Promise<Comments> {
+    await this.getPostById(id);
+    return commentRepository.create(id, params);
   }
 }
 

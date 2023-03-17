@@ -18,10 +18,19 @@ class UserRepository {
     });
   }
 
-  async getPassword(email: string): Promise<{ password: string } | null> {
+  async verifyEmailExists(email: string): Promise<boolean> {
+    const user = await this.prisma.user.findFirst({
+      where: { email },
+    });
+    return user ? true : false;
+  }
+
+  async getPassword(
+    email: string
+  ): Promise<{ id: number; password: string } | null> {
     return this.prisma.user.findFirst({
       where: { email },
-      select: { password: true },
+      select: { id: true, password: true },
     });
   }
 }

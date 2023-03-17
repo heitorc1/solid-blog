@@ -2,4 +2,4 @@ import * as dotenv from "dotenv";
 
 dotenv.config();
 
-export const APP_SECRET = process.env.APP_SECRET ?? "";
+export const JWT_SECRET = process.env.JWT_SECRET ?? "my-secret";

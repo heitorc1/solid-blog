@@ -3,35 +3,44 @@ import InvalidPostError from "../errors/InvalidPostError";
 import { CreateComment } from "../interfaces/comment";
 import { CreatePost, IPost, ListPost } from "../interfaces/post";
 import commentRepository from "../repositories/comments";
-import postRepository from "../repositories/post";
+import { injectable, inject } from "inversify";
+import { TYPES } from "../config/types";
+import PostRepository from "../repositories/post";
 
+@injectable()
 class PostService {
+  private _repository: PostRepository;
+
+  constructor(@inject(TYPES.PostRepository) repository: PostRepository) {
+    this._repository = repository;
+  }
+
   async index(page = 1, perPage = 10): Promise<ListPost> {
-    return postRepository.index(page, perPage);
+    return this._repository.index(page, perPage);
   }
 
   async create(params: CreatePost): Promise<CreatePost> {
-    return postRepository.create(params);
+    return this._repository.create(params);
   }
 
   async update(id: number, params: CreatePost): Promise<CreatePost> {
-    const post = await postRepository.findPostById(id);
+    const post = await this._repository.findPostById(id);
     if (!post) {
       throw new InvalidPostError("Post not found", 404);
     }
-    return postRepository.update(id, params);
+    return this._repository.update(id, params);
   }
 
   async delete(id: number): Promise<void> {
-    const post = await postRepository.findPostById(id);
+    const post = await this._repository.findPostById(id);
     if (!post) {
       throw new InvalidPostError("Post not found", 404);
     }
-    postRepository.delete(id);
+    this._repository.delete(id);
   }
 
   async getPostById(id: number): Promise<IPost> {
-    const post = await postRepository.findPostById(id);
+    const post = await this._repository.findPostById(id);
     if (!post) {
       throw new InvalidPostError("Post not found", 404);
     }
@@ -44,5 +53,4 @@ class PostService {
   }
 }
 
-const postService = new PostService();
-export default postService;
+export default PostService;

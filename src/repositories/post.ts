@@ -1,16 +1,13 @@
-import { Post, PrismaClient } from "@prisma/client";
+import { Post } from "@prisma/client";
+import prisma from "../config/database";
 import { CreatePost, IPost, ListPost } from "../interfaces/post";
+import { injectable } from "inversify";
 
+@injectable()
 class PostRepository {
-  private prisma: PrismaClient;
-
-  constructor() {
-    this.prisma = new PrismaClient();
-  }
-
   async index(page: number, perPage: number): Promise<ListPost> {
-    const totalPosts = await this.prisma.post.count();
-    const posts = await this.prisma.post.findMany({
+    const totalPosts = await prisma.post.count();
+    const posts = await prisma.post.findMany({
       skip: (page - 1) * perPage,
       take: perPage,
       select: {
@@ -37,7 +34,7 @@ class PostRepository {
   }
 
   async create(post: CreatePost): Promise<Post> {
-    return this.prisma.post.create({
+    return prisma.post.create({
       data: {
         title: post.title,
         content: post.content,
@@ -52,7 +49,7 @@ class PostRepository {
   }
 
   async update(id: number, post: Partial<CreatePost>): Promise<Post> {
-    return this.prisma.post.update({
+    return prisma.post.update({
       data: {
         title: post.title,
         content: post.content,
@@ -63,13 +60,13 @@ class PostRepository {
   }
 
   async delete(id: number): Promise<Post> {
-    return this.prisma.post.delete({
+    return prisma.post.delete({
       where: { id },
     });
   }
 
   async findPostById(id: number): Promise<IPost | null> {
-    return this.prisma.post.findFirst({
+    return prisma.post.findFirst({
       where: { id },
       select: {
         title: true,
@@ -97,5 +94,4 @@ class PostRepository {
   }
 }
 
-const postRepository = new PostRepository();
-export default postRepository;
+export default PostRepository;

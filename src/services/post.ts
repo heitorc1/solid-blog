@@ -2,17 +2,22 @@ import { Comments } from "@prisma/client";
 import InvalidPostError from "../errors/InvalidPostError";
 import { CreateComment } from "../interfaces/comment";
 import { CreatePost, IPost, ListPost } from "../interfaces/post";
-import commentRepository from "../repositories/comments";
 import { injectable, inject } from "inversify";
 import { TYPES } from "../config/types";
 import PostRepository from "../repositories/post";
+import CommentRepository from "../repositories/comments";
 
 @injectable()
 class PostService {
   private _repository: PostRepository;
+  private _commentRepository: CommentRepository;
 
-  constructor(@inject(TYPES.PostRepository) repository: PostRepository) {
+  constructor(
+    @inject(TYPES.PostRepository) repository: PostRepository,
+    @inject(TYPES.CommentRepository) commentRepository: CommentRepository
+  ) {
     this._repository = repository;
+    this._commentRepository = commentRepository;
   }
 
   async index(page = 1, perPage = 10): Promise<ListPost> {
@@ -49,7 +54,7 @@ class PostService {
 
   async createComment(id: number, params: CreateComment): Promise<Comments> {
     await this.getPostById(id);
-    return commentRepository.create(id, params);
+    return this._commentRepository.create(id, params);
   }
 }
 

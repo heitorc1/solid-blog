@@ -1,15 +1,12 @@
-import { Comments, PrismaClient } from "@prisma/client";
+import { Comments } from "@prisma/client";
+import { injectable } from "inversify";
+import prisma from "../config/database";
 import { CreateComment, UpdateComment } from "../interfaces/comment";
 
+@injectable()
 class CommentRepository {
-  private prisma: PrismaClient;
-
-  constructor() {
-    this.prisma = new PrismaClient();
-  }
-
   async create(postId: number, params: CreateComment): Promise<Comments> {
-    return this.prisma.comments.create({
+    return prisma.comments.create({
       data: {
         text: params.text,
         user: {
@@ -27,7 +24,7 @@ class CommentRepository {
   }
 
   async update(id: number, params: UpdateComment): Promise<Comments> {
-    return this.prisma.comments.update({
+    return prisma.comments.update({
       data: { text: params.text },
       where: {
         id: id,
@@ -36,15 +33,14 @@ class CommentRepository {
   }
 
   async delete(id: number): Promise<Comments> {
-    return this.prisma.comments.delete({
+    return prisma.comments.delete({
       where: { id },
     });
   }
 
   async getCommentById(id: number): Promise<Comments | null> {
-    return this.prisma.comments.findFirst({ where: { id } });
+    return prisma.comments.findFirst({ where: { id } });
   }
 }
 
-const commentRepository = new CommentRepository();
-export default commentRepository;
+export default CommentRepository;

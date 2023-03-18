@@ -1,38 +1,13 @@
-import { NextFunction, Request, Response, Router } from "express";
-import { z } from "zod";
-import commentService from "../services/comment";
+import { Router } from "express";
+import container from "../config/container";
+import { TYPES } from "../config/types";
+import CommentController from "../controllers/comment";
 
 const commentRouter = Router();
 
-commentRouter.put(
-  "/:id",
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params;
-    const body = req.body;
+const controller = container.get<CommentController>(TYPES.CommentController);
 
-    try {
-      const validatedData = z.object({ text: z.string() }).parse(body);
-
-      const comment = await commentService.update(parseInt(id), validatedData);
-      return res.json(comment);
-    } catch (error) {
-      next(error);
-    }
-  }
-);
-
-commentRouter.delete(
-  "/:id",
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params;
-
-    try {
-      await commentService.delete(parseInt(id));
-      return res.json({ message: "Comment deleted successfully!" });
-    } catch (error) {
-      next(error);
-    }
-  }
-);
+commentRouter.put("/:id", controller.update.bind(controller));
+commentRouter.delete("/:id", controller.delete.bind(controller));
 
 export default commentRouter;

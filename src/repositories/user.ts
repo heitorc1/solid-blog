@@ -1,11 +1,15 @@
-import { User } from "@prisma/client";
-import { IUser } from "../interfaces/user";
+import {
+  ICreateUser,
+  IGetUserByEmail,
+  IUser,
+  IUserRepository,
+} from "../interfaces/user";
 import { injectable } from "inversify";
 import prisma from "../config/database";
 
 @injectable()
-class UserRepository {
-  async create(user: IUser): Promise<User> {
+class UserRepository implements IUserRepository {
+  async create(user: ICreateUser): Promise<IUser> {
     return prisma.user.create({
       data: {
         name: user.name,
@@ -22,12 +26,14 @@ class UserRepository {
     return user ? true : false;
   }
 
-  async getPassword(
-    email: string
-  ): Promise<{ id: number; password: string } | null> {
+  async getUserByEmail(email: string): Promise<IGetUserByEmail> {
     return prisma.user.findFirst({
       where: { email },
-      select: { id: true, password: true },
+      select: {
+        id: true,
+        email: true,
+        password: true,
+      },
     });
   }
 }

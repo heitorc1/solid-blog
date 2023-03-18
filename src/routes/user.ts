@@ -7,7 +7,7 @@ const userRouter = Router();
 
 const controller = container.get<UserController>(TYPES.UserController);
 
-userRouter.post("/create", controller.index.bind(controller));
+userRouter.post("/create", controller.create.bind(controller));
 userRouter.post("/login", controller.login.bind(controller));
 
 export default userRouter;

@@ -1,5 +1,6 @@
-import { Pagination } from "./pagination";
 import { IComment } from "./comment";
+import { Controller } from "./controller";
+import { IPagination } from "./pagination";
 
 export interface IPost {
   title: string;
@@ -12,14 +13,39 @@ export interface IPost {
   comments?: IComment[];
 }
 
-export interface CreatePost {
+export interface ICreatePost {
   title: string;
   content: string;
   published: boolean;
   userId: number;
 }
 
-export interface ListPost {
+export interface IListPost {
   data: IPost[];
-  pagination: Pagination;
+  pagination: IPagination;
+}
+
+export interface IPostController {
+  index: Controller<void>;
+  create: Controller<void>;
+  update: Controller<void>;
+  delete: Controller<void>;
+  getPostById: Controller<void>;
+  createComment: Controller<void>;
+}
+
+export interface IPostService {
+  index: (page: number, perPage: number) => Promise<IListPost>;
+  create: (params: ICreatePost) => Promise<IPost>;
+  update: (id: number, params: ICreatePost) => Promise<IPost>;
+  delete: (id: number) => Promise<void>;
+  getPostById: (id: number) => Promise<IPost>;
+}
+
+export interface IPostRepository {
+  index: (page: number, perPage: number) => Promise<IListPost>;
+  create: (post: ICreatePost) => Promise<IPost>;
+  update: (id: number, post: Partial<ICreatePost>) => Promise<IPost>;
+  delete: (id: number) => Promise<void>;
+  findPostById: (id: number) => Promise<IPost | null>;
 }

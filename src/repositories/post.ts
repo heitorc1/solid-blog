@@ -1,11 +1,27 @@
-import { Post } from "@prisma/client";
 import prisma from "../config/database";
-import { CreatePost, IPost, ListPost } from "../interfaces/post";
+import {
+  ICreatePost,
+  IListPost,
+  IPost,
+  IPostRepository,
+} from "../interfaces/post";
 import { injectable } from "inversify";
 
 @injectable()
-class PostRepository {
-  async index(page: number, perPage: number): Promise<ListPost> {
+class PostRepository implements IPostRepository {
+  private _selectFields = {
+    title: true,
+    content: true,
+    published: true,
+    user: {
+      select: {
+        name: true,
+        email: true,
+      },
+    },
+  };
+
+  async index(page: number, perPage: number): Promise<IListPost> {
     const totalPosts = await prisma.post.count();
     const posts = await prisma.post.findMany({
       skip: (page - 1) * perPage,
@@ -33,7 +49,7 @@ class PostRepository {
     };
   }
 
-  async create(post: CreatePost): Promise<Post> {
+  async create(post: ICreatePost): Promise<IPost> {
     return prisma.post.create({
       data: {
         title: post.title,
@@ -45,10 +61,11 @@ class PostRepository {
           },
         },
       },
+      select: this._selectFields,
     });
   }
 
-  async update(id: number, post: Partial<CreatePost>): Promise<Post> {
+  async update(id: number, post: Partial<ICreatePost>): Promise<IPost> {
     return prisma.post.update({
       data: {
         title: post.title,
@@ -56,13 +73,15 @@ class PostRepository {
         published: post.published,
       },
       where: { id },
+      select: this._selectFields,
     });
   }
 
-  async delete(id: number): Promise<Post> {
-    return prisma.post.delete({
+  async delete(id: number): Promise<void> {
+    await prisma.post.delete({
       where: { id },
     });
+    return;
   }
 
   async findPostById(id: number): Promise<IPost | null> {

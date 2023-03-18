@@ -1,6 +1,11 @@
 import bcrypt from "bcrypt";
-import { ILogin, IUser } from "../interfaces/user";
-import { User } from "@prisma/client";
+import {
+  ILogin,
+  ICreateUser,
+  IUser,
+  IToken,
+  IUserService,
+} from "../interfaces/user";
 import InvalidLoginError from "../errors/InvalidLoginError";
 import { sign } from "jsonwebtoken";
 import UserRepository from "../repositories/user";
@@ -9,14 +14,14 @@ import { TYPES } from "../config/types";
 import { JWT_SECRET } from "../config/envs";
 
 @injectable()
-class UserService {
+class UserService implements IUserService {
   private _repository: UserRepository;
 
   constructor(@inject(TYPES.UserRepository) repository: UserRepository) {
     this._repository = repository;
   }
 
-  async create(params: IUser): Promise<User> {
+  async create(params: ICreateUser): Promise<IUser> {
     const userAlreadyExists = await this._repository.verifyEmailExists(
       params.email
     );
@@ -33,8 +38,8 @@ class UserService {
     });
   }
 
-  async login(params: ILogin): Promise<string> {
-    const user = await this._repository.getPassword(params.email);
+  async login(params: ILogin): Promise<IToken> {
+    const user = await this._repository.getUserByEmail(params.email);
 
     if (!user) {
       throw new InvalidLoginError("User not found", 404);
@@ -56,7 +61,7 @@ class UserService {
         expiresIn: 4 * 60 * 60,
       }
     );
-    return token;
+    return { message: "User logged in", token };
   }
 }
 

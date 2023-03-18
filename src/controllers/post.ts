@@ -4,9 +4,10 @@ import { inject } from "inversify";
 import { TYPES } from "../config/types";
 import { NextFunction, Request, Response } from "express";
 import { z } from "zod";
+import { IPostController } from "../interfaces/post";
 
 @injectable()
-class PostController {
+class PostController implements IPostController {
   private _service: PostService;
 
   constructor(@inject(TYPES.PostService) service: PostService) {
@@ -65,7 +66,7 @@ class PostController {
       }).parse(body);
 
       const post = await this._service.update(parseInt(id), body);
-      return res.json(post);
+      res.json(post);
     } catch (error) {
       next(error);
     }
@@ -76,7 +77,7 @@ class PostController {
 
     try {
       await this._service.delete(parseInt(id));
-      return res.json({ message: "Post deleted successfully!" });
+      res.json({ message: "Post deleted successfully!" });
     } catch (error) {
       next(error);
     }
@@ -87,7 +88,7 @@ class PostController {
 
     try {
       const post = await this._service.getPostById(parseInt(id));
-      return res.json(post);
+      res.json(post);
     } catch (error) {
       next(error);
     }
@@ -109,7 +110,7 @@ class PostController {
         parseInt(id),
         validatedData
       );
-      return res.json(comment);
+      res.json(comment);
     } catch (error) {
       next(error);
     }

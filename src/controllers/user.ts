@@ -2,17 +2,18 @@ import { NextFunction, Request, Response } from "express";
 import { inject, injectable } from "inversify";
 import { z } from "zod";
 import { TYPES } from "../config/types";
+import { IUserController } from "../interfaces/user";
 import UserService from "../services/user";
 
 @injectable()
-class UserController {
+class UserController implements IUserController {
   private _service: UserService;
 
   constructor(@inject(TYPES.UserService) service: UserService) {
     this._service = service;
   }
 
-  async index(req: Request, res: Response, next: NextFunction) {
+  async create(req: Request, res: Response, next: NextFunction): Promise<void> {
     const body = req.body;
 
     try {
@@ -31,7 +32,7 @@ class UserController {
     }
   }
 
-  async login(req: Request, res: Response, next: NextFunction) {
+  async login(req: Request, res: Response, next: NextFunction): Promise<void> {
     const body = req.body;
 
     try {
@@ -42,9 +43,9 @@ class UserController {
         })
         .parse(body);
 
-      const token = await this._service.login(userData);
+      const response = await this._service.login(userData);
 
-      return res.json({ success: "User logged in", token });
+      res.json(response);
     } catch (error) {
       next(error);
     }

@@ -5,8 +5,6 @@ import commentRouter from "./routes/comment";
 import postRouter from "./routes/post";
 import userRouter from "./routes/user";
 
-import "reflect-metadata";
-
 const app = express();
 const port = 8080;
 
@@ -20,7 +18,8 @@ app.use(authenticate);
 app.use("/posts", postRouter);
 app.use("/comments", commentRouter);
 
-app.use((error: any, req: Request, res: Response, next: NextFunction) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
+app.use((error: any, _req: Request, res: Response, _next: NextFunction) => {
   if (error instanceof ZodError) {
     return res.status(422).json(error);
   }

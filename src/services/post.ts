@@ -6,7 +6,7 @@ import commentRepository from "../repositories/comments";
 import postRepository from "../repositories/post";
 
 class PostService {
-  async index(page: number = 1, perPage: number = 10): Promise<ListPost> {
+  async index(page = 1, perPage = 10): Promise<ListPost> {
     return postRepository.index(page, perPage);
   }
 

@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { verify, TokenExpiredError } from "jsonwebtoken";
+import { TokenExpiredError, verify } from "jsonwebtoken";
 import { JWT_SECRET } from "../config/envs";
 import AuthenticationError from "../errors/AuthenticationError";
 

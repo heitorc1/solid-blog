@@ -1,5 +1,5 @@
 import { Post, PrismaClient } from "@prisma/client";
-import { CreatePost, ListPost, IPost } from "../interfaces/post";
+import { CreatePost, IPost, ListPost } from "../interfaces/post";
 
 class PostRepository {
   private prisma: PrismaClient;

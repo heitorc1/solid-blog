@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import { inject, injectable } from "inversify";
 import { z } from "zod";
 import { TYPES } from "../config/types";
-import { UserControllerInterface } from "../interfaces/user";
 import UserService from "../services/user";
 
 @injectable()

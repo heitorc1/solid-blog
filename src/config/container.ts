@@ -4,7 +4,6 @@ import UserController from "../controllers/user";
 import UserRepository from "../repositories/user";
 import UserService from "../services/user";
 import { TYPES } from "./types";
-import { PrismaClient } from "@prisma/client";
 
 const container = new Container();
 

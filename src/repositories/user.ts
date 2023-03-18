@@ -1,7 +1,6 @@
-import { PrismaClient, User } from "@prisma/client";
+import { User } from "@prisma/client";
 import { IUser } from "../interfaces/user";
-import { inject, injectable } from "inversify";
-import { TYPES } from "../config/types";
+import { injectable } from "inversify";
 import prisma from "../config/database";
 
 @injectable()

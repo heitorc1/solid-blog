@@ -1,5 +1,5 @@
 import { Comments, PrismaClient } from "@prisma/client";
-import { CreateComment, IComment, UpdateComment } from "../interfaces/comment";
+import { CreateComment, UpdateComment } from "../interfaces/comment";
 
 class CommentRepository {
   private prisma: PrismaClient;

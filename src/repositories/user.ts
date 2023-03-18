@@ -1,15 +1,13 @@
 import { PrismaClient, User } from "@prisma/client";
 import { IUser } from "../interfaces/user";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../config/types";
+import prisma from "../config/database";
 
+@injectable()
 class UserRepository {
-  private prisma: PrismaClient;
-
-  constructor() {
-    this.prisma = new PrismaClient();
-  }
-
   async create(user: IUser): Promise<User> {
-    return this.prisma.user.create({
+    return prisma.user.create({
       data: {
         name: user.name,
         email: user.email,
@@ -19,7 +17,7 @@ class UserRepository {
   }
 
   async verifyEmailExists(email: string): Promise<boolean> {
-    const user = await this.prisma.user.findFirst({
+    const user = await prisma.user.findFirst({
       where: { email },
     });
     return user ? true : false;
@@ -28,12 +26,11 @@ class UserRepository {
   async getPassword(
     email: string
   ): Promise<{ id: number; password: string } | null> {
-    return this.prisma.user.findFirst({
+    return prisma.user.findFirst({
       where: { email },
       select: { id: true, password: true },
     });
   }
 }
 
-const userRepository = new UserRepository();
-export default userRepository;
+export default UserRepository;

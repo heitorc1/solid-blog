@@ -5,6 +5,8 @@ import commentRouter from "./routes/comment";
 import postRouter from "./routes/post";
 import userRouter from "./routes/user";
 
+import "reflect-metadata";
+
 const app = express();
 const port = 8080;
 

@@ -1,14 +1,23 @@
-import userRepository from "../repositories/user";
 import bcrypt from "bcrypt";
 import { ILogin, IUser } from "../interfaces/user";
 import { User } from "@prisma/client";
 import InvalidLoginError from "../errors/InvalidLoginError";
 import { sign } from "jsonwebtoken";
-import { JWT_SECRET } from "../envs";
+import UserRepository from "../repositories/user";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../config/types";
+import { JWT_SECRET } from "../config/envs";
 
+@injectable()
 class UserService {
+  private _repository: UserRepository;
+
+  constructor(@inject(TYPES.UserRepository) repository: UserRepository) {
+    this._repository = repository;
+  }
+
   async create(params: IUser): Promise<User> {
-    const userAlreadyExists = await userRepository.verifyEmailExists(
+    const userAlreadyExists = await this._repository.verifyEmailExists(
       params.email
     );
 
@@ -18,14 +27,14 @@ class UserService {
 
     const hashedPassword = await bcrypt.hash(params.password, 10);
 
-    return userRepository.create({
+    return this._repository.create({
       ...params,
       password: hashedPassword,
     });
   }
 
   async login(params: ILogin): Promise<string> {
-    const user = await userRepository.getPassword(params.email);
+    const user = await this._repository.getPassword(params.email);
 
     if (!user) {
       throw new InvalidLoginError("User not found", 404);
@@ -51,5 +60,4 @@ class UserService {
   }
 }
 
-const userService = new UserService();
-export default userService;
+export default UserService;

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { verify, TokenExpiredError } from "jsonwebtoken";
-import { JWT_SECRET } from "../envs";
+import { JWT_SECRET } from "../config/envs";
 import AuthenticationError from "../errors/AuthenticationError";
 
 export const authenticate = (

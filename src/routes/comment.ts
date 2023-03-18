@@ -30,7 +30,6 @@ commentRouter.delete(
       await commentService.delete(parseInt(id));
       return res.json({ message: "Comment deleted successfully!" });
     } catch (error) {
-      console.error(error);
       next(error);
     }
   }

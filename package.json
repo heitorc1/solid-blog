@@ -14,8 +14,10 @@
     "bcrypt": "^5.1.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "inversify": "^6.0.1",
     "jsonwebtoken": "^9.0.0",
     "prisma": "^4.11.0",
+    "reflect-metadata": "^0.1.13",
     "zod": "^3.21.4"
   },
   "devDependencies": {
@@ -23,6 +25,7 @@
     "@types/express": "^4.17.17",
     "@types/jest": "^29.4.1",
     "@types/jsonwebtoken": "^9.0.1",
+    "@types/node": "^18.15.3",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "eslint": "^8.0.1",
     "eslint-config-standard-with-typescript": "^34.0.0",

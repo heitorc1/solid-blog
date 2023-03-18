@@ -1,6 +1,7 @@
 import express, { NextFunction, Request, Response } from "express";
 import { ZodError } from "zod";
 import { authenticate } from "./middlewares/authentication";
+import commentRouter from "./routes/comment";
 import postRouter from "./routes/post";
 import userRouter from "./routes/user";
 
@@ -15,6 +16,7 @@ app.use("/users", userRouter);
 app.use(authenticate);
 
 app.use("/posts", postRouter);
+app.use("/comments", commentRouter);
 
 app.use((error: any, req: Request, res: Response, next: NextFunction) => {
   if (error instanceof ZodError) {

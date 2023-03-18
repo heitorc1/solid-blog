@@ -1,5 +1,5 @@
-import { PrismaClient } from "@prisma/client";
-import { CreateComment, IComment } from "../interfaces/comment";
+import { Comments, PrismaClient } from "@prisma/client";
+import { CreateComment, IComment, UpdateComment } from "../interfaces/comment";
 
 class CommentRepository {
   private prisma: PrismaClient;
@@ -8,7 +8,7 @@ class CommentRepository {
     this.prisma = new PrismaClient();
   }
 
-  async create(postId: number, params: CreateComment) {
+  async create(postId: number, params: CreateComment): Promise<Comments> {
     return this.prisma.comments.create({
       data: {
         text: params.text,
@@ -24,6 +24,25 @@ class CommentRepository {
         },
       },
     });
+  }
+
+  async update(id: number, params: UpdateComment): Promise<Comments> {
+    return this.prisma.comments.update({
+      data: { text: params.text },
+      where: {
+        id: id,
+      },
+    });
+  }
+
+  async delete(id: number): Promise<Comments> {
+    return this.prisma.comments.delete({
+      where: { id },
+    });
+  }
+
+  async getCommentById(id: number): Promise<Comments | null> {
+    return this.prisma.comments.findFirst({ where: { id } });
   }
 }
 

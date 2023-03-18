@@ -10,3 +10,7 @@ export interface CreateComment {
   text: string;
   userId: number;
 }
+
+export interface UpdateComment {
+  text: string;
+}

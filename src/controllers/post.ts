@@ -20,14 +20,14 @@ class PostController implements IPostController {
     try {
       const validatedData = z
         .object({
-          page: z.string().optional(),
-          perPage: z.string().optional(),
+          page: z.coerce.number().optional(),
+          perPage: z.coerce.number().optional(),
         })
         .parse(params);
 
       const posts = await this._service.index(
-        validatedData.page ? parseInt(validatedData.page) : undefined,
-        validatedData.perPage ? parseInt(validatedData.perPage) : undefined
+        validatedData.page ? validatedData.page : undefined,
+        validatedData.perPage ? validatedData.perPage : undefined
       );
       res.json(posts);
     } catch (error) {

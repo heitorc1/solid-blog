@@ -25,11 +25,11 @@ class PostController implements IPostController {
         })
         .parse(params);
 
-      const posts = await this._service.index(
+      const response = await this._service.index(
         validatedData.page ? validatedData.page : undefined,
         validatedData.perPage ? validatedData.perPage : undefined
       );
-      res.json(posts);
+      res.status(response.status).json(response);
     } catch (error) {
       next(error);
     }
@@ -46,9 +46,9 @@ class PostController implements IPostController {
         userId: z.number(),
       }).parse(body);
 
-      const post = await this._service.create(body);
+      const response = await this._service.create(body);
 
-      res.json(post);
+      res.status(response.status).json(response);
     } catch (error) {
       next(error);
     }
@@ -66,8 +66,8 @@ class PostController implements IPostController {
         published: z.boolean().optional(),
       }).parse(body);
 
-      const post = await this._service.update(validatedId, body);
-      res.json(post);
+      const response = await this._service.update(validatedId, body);
+      res.status(response.status).json(response);
     } catch (error) {
       next(error);
     }
@@ -78,8 +78,8 @@ class PostController implements IPostController {
 
     try {
       const validatedId = z.coerce.number().parse(id);
-      await this._service.delete(validatedId);
-      res.json({ message: "Post deleted successfully!" });
+      const response = await this._service.delete(validatedId);
+      res.status(response.status).json(response);
     } catch (error) {
       next(error);
     }
@@ -90,8 +90,8 @@ class PostController implements IPostController {
 
     try {
       const validatedId = z.coerce.number().parse(id);
-      const post = await this._service.getPostById(validatedId);
-      res.json(post);
+      const response = await this._service.getPostById(validatedId);
+      res.status(response.status).json(response);
     } catch (error) {
       next(error);
     }
@@ -110,11 +110,11 @@ class PostController implements IPostController {
         })
         .parse(body);
 
-      const comment = await this._service.createComment(
+      const response = await this._service.createComment(
         validatedId,
         validatedData
       );
-      res.json(comment);
+      res.status(response.status).json(response);
     } catch (error) {
       next(error);
     }

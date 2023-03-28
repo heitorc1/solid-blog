@@ -1,4 +1,5 @@
 import { Controller } from "./controller";
+import { IResponse } from "./response";
 
 export interface ICreateUser {
   name: string;
@@ -12,7 +13,6 @@ export interface ILogin {
 }
 
 export interface IToken {
-  message: string;
   token: string;
 }
 
@@ -23,20 +23,18 @@ export interface IUser {
   password: string;
 }
 
-export type IGetUserByEmail = Omit<IUser, "name"> | null;
-
 export interface IUserController {
   create: Controller<void>;
   login: Controller<void>;
 }
 
 export interface IUserService {
-  create: (params: ICreateUser) => Promise<IUser>;
-  login: (params: ILogin) => Promise<IToken>;
+  create: (params: ICreateUser) => Promise<IResponse<IUser>>;
+  login: (params: ILogin) => Promise<IResponse<IToken>>;
 }
 
 export interface IUserRepository {
   create: (params: ICreateUser) => Promise<IUser>;
   verifyEmailExists: (email: string) => Promise<boolean>;
-  getUserByEmail: (email: string) => Promise<IGetUserByEmail>;
+  getUserByEmail: (email: string) => Promise<IUser | null>;
 }

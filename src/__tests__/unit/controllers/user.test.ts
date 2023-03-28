@@ -13,19 +13,20 @@ const user = {
   password: "password",
 };
 
-const token = {
+jest.spyOn(UserService.prototype, "create").mockResolvedValue({
+  message: "User created successfully!",
+  status: 201,
+  data: user,
+});
+jest.spyOn(UserService.prototype, "login").mockResolvedValue({
   message: "User logged in",
-  token: "my-jwt-token",
-};
-
-jest.spyOn(UserService.prototype, "create").mockResolvedValue(user);
-jest.spyOn(UserService.prototype, "login").mockResolvedValue(token);
+  status: 200,
+  data: { token: "my-jwt-token" },
+});
 
 describe("create", () => {
   it("should create a new user", async () => {
     const request = httpMocks.createRequest({
-      method: "POST",
-      url: "/users/create",
       body: {
         name: "Heitor",
         email: "heitorcarneiro1@gmail.com",
@@ -38,13 +39,11 @@ describe("create", () => {
 
     await controller.create(request, response, next);
 
-    expect(response.statusCode).toBe(200);
+    expect(response.statusCode).toBe(201);
   });
 
   it("should not create a new user without a name", async () => {
     const request = httpMocks.createRequest({
-      method: "POST",
-      url: "/users/create",
       body: {
         email: "heitorcarneiro1@gmail.com",
         password: "password",
@@ -61,8 +60,6 @@ describe("create", () => {
 
   it("should not create a new user without an email", async () => {
     const request = httpMocks.createRequest({
-      method: "POST",
-      url: "/users/create",
       body: {
         name: "Heitor",
         password: "password",
@@ -79,8 +76,6 @@ describe("create", () => {
 
   it("should not create a new user without a password", async () => {
     const request = httpMocks.createRequest({
-      method: "POST",
-      url: "/users/create",
       body: {
         name: "Heitor",
         email: "heitorcarneiro1@gmail.com",
@@ -97,8 +92,6 @@ describe("create", () => {
 
   it("should not create a new user with a short password", async () => {
     const request = httpMocks.createRequest({
-      method: "POST",
-      url: "/users/create",
       body: {
         name: "Heitor",
         email: "heitorcarneiro1@gmail.com",
@@ -116,8 +109,6 @@ describe("create", () => {
 
   it("should not create a new user with a long password", async () => {
     const request = httpMocks.createRequest({
-      method: "POST",
-      url: "/users/create",
       body: {
         name: "Heitor",
         email: "heitorcarneiro1@gmail.com",
@@ -138,8 +129,6 @@ describe("create", () => {
 describe("login", () => {
   it("should return a token", async () => {
     const request = httpMocks.createRequest({
-      method: "POST",
-      url: "/users/login",
       body: {
         email: "heitorcarneiro1@gmail.com",
         password: "password",
@@ -156,8 +145,6 @@ describe("login", () => {
 
   it("should not return a token without email", async () => {
     const request = httpMocks.createRequest({
-      method: "POST",
-      url: "/users/login",
       body: {
         email: "heitorcarneiro1@gmail.com",
       },
@@ -173,8 +160,6 @@ describe("login", () => {
 
   it("should not return a token without password", async () => {
     const request = httpMocks.createRequest({
-      method: "POST",
-      url: "/users/login",
       body: {
         password: "password",
       },

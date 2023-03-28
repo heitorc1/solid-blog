@@ -6,16 +6,25 @@ import * as httpMocks from "node-mocks-http";
 
 const controller = container.get<CommentController>(TYPES.CommentController);
 
-const comment = {
-  text: "My comment",
-  createdAt: new Date("2023-03-27 12:00:00"),
-  user: {
-    name: "Heitor",
+const updated = {
+  message: "Post updated successfully!",
+  status: 200,
+  data: {
+    text: "My comment",
+    createdAt: new Date("2023-03-27 12:00:00"),
+    user: {
+      name: "Heitor",
+    },
   },
 };
 
-jest.spyOn(CommentService.prototype, "update").mockResolvedValue(comment);
-jest.spyOn(CommentService.prototype, "delete").mockResolvedValue();
+const deleted = {
+  message: "Post deleted successfully!",
+  status: 200,
+};
+
+jest.spyOn(CommentService.prototype, "update").mockResolvedValue(updated);
+jest.spyOn(CommentService.prototype, "delete").mockResolvedValue(deleted);
 
 describe("update", () => {
   it("should update a comment", async () => {

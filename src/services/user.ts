@@ -1,4 +1,3 @@
-import bcrypt from "bcrypt";
 import {
   ILogin,
   ICreateUser,
@@ -7,11 +6,12 @@ import {
   IUserService,
 } from "../interfaces/user";
 import InvalidLoginError from "../errors/InvalidLoginError";
-import { sign } from "jsonwebtoken";
 import UserRepository from "../repositories/user";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../config/types";
-import { JWT_SECRET } from "../config/envs";
+import { IResponse } from "../interfaces/response";
+import { comparePassword, hashPassword } from "../lib/hashPassword";
+import { createToken } from "../lib/jwt";
 
 @injectable()
 class UserService implements IUserService {
@@ -21,7 +21,7 @@ class UserService implements IUserService {
     this._repository = repository;
   }
 
-  async create(params: ICreateUser): Promise<IUser> {
+  async create(params: ICreateUser): Promise<IResponse<IUser>> {
     const userAlreadyExists = await this._repository.verifyEmailExists(
       params.email
     );
@@ -30,38 +30,38 @@ class UserService implements IUserService {
       throw new InvalidLoginError("Email already registered", 404);
     }
 
-    const hashedPassword = await bcrypt.hash(params.password, 10);
+    const hashedPassword = await hashPassword(params.password);
 
-    return this._repository.create({
+    const user = await this._repository.create({
       ...params,
       password: hashedPassword,
     });
+
+    return {
+      message: "User created successfully!",
+      status: 201,
+      data: user,
+    };
   }
 
-  async login(params: ILogin): Promise<IToken> {
+  async login(params: ILogin): Promise<IResponse<IToken>> {
     const user = await this._repository.getUserByEmail(params.email);
 
     if (!user) {
       throw new InvalidLoginError("User not found", 404);
     }
 
-    const isSamePassword = await bcrypt.compare(params.password, user.password);
+    const isSamePassword = await comparePassword(
+      params.password,
+      user.password
+    );
 
     if (!isSamePassword) {
       throw new InvalidLoginError("Incorrect password", 404);
     }
 
-    const token = sign(
-      {
-        id: user.id,
-        email: params.email,
-      },
-      JWT_SECRET,
-      {
-        expiresIn: 4 * 60 * 60,
-      }
-    );
-    return { message: "User logged in", token };
+    const token = createToken(user);
+    return { message: "User logged in", status: 200, data: { token } };
   }
 }
 

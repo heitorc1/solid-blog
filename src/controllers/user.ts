@@ -25,8 +25,8 @@ class UserController implements IUserController {
         })
         .parse(body);
 
-      const user = await this._service.create(userData);
-      res.json(user);
+      const response = await this._service.create(userData);
+      res.status(response.status).json(response);
     } catch (error) {
       next(error);
     }
@@ -45,7 +45,7 @@ class UserController implements IUserController {
 
       const response = await this._service.login(userData);
 
-      res.json(response);
+      res.status(response.status).json(response);
     } catch (error) {
       next(error);
     }

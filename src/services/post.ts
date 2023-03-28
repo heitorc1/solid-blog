@@ -10,6 +10,7 @@ import { TYPES } from "../config/types";
 import PostRepository from "../repositories/post";
 import CommentRepository from "../repositories/comments";
 import { IComment, ICreateComment } from "../interfaces/comment";
+import { IResponse } from "../interfaces/response";
 
 @injectable()
 class PostService implements IPostService {
@@ -24,41 +25,66 @@ class PostService implements IPostService {
     this._commentRepository = commentRepository;
   }
 
-  async index(page = 1, perPage = 10): Promise<IListPost> {
-    return this._repository.index(page, perPage);
+  async index(page = 1, perPage = 10): Promise<IResponse<IListPost>> {
+    const posts = await this._repository.index(page, perPage);
+    return {
+      message: "Success!",
+      status: 200,
+      data: posts,
+    };
   }
 
-  async create(params: ICreatePost): Promise<IPost> {
-    return this._repository.create(params);
+  async create(params: ICreatePost): Promise<IResponse<IPost>> {
+    const post = await this._repository.create(params);
+    return {
+      message: "Post created successfully!",
+      status: 201,
+      data: post,
+    };
   }
 
-  async update(id: number, params: ICreatePost): Promise<IPost> {
-    const post = await this._repository.findPostById(id);
-    if (!post) {
-      throw new InvalidPostError("Post not found", 404);
-    }
-    return this._repository.update(id, params);
-  }
-
-  async delete(id: number): Promise<void> {
-    const post = await this._repository.findPostById(id);
-    if (!post) {
-      throw new InvalidPostError("Post not found", 404);
-    }
-    return this._repository.delete(id);
-  }
-
-  async getPostById(id: number): Promise<IPost> {
-    const post = await this._repository.findPostById(id);
-    if (!post) {
-      throw new InvalidPostError("Post not found", 404);
-    }
-    return post;
-  }
-
-  async createComment(id: number, params: ICreateComment): Promise<IComment> {
+  async update(id: number, params: ICreatePost): Promise<IResponse<IPost>> {
     await this.getPostById(id);
-    return this._commentRepository.create(id, params);
+    const post = await this._repository.update(id, params);
+    return {
+      message: "Post updated successfully!",
+      status: 200,
+      data: post,
+    };
+  }
+
+  async delete(id: number): Promise<IResponse<void>> {
+    await this.getPostById(id);
+    await this._repository.delete(id);
+    return {
+      message: "Post deleted successfully!",
+      status: 200,
+    };
+  }
+
+  async getPostById(id: number): Promise<IResponse<IPost>> {
+    const post = await this._repository.findPostById(id);
+    if (!post) {
+      throw new InvalidPostError("Post not found", 404);
+    }
+    return {
+      message: "Success!",
+      status: 200,
+      data: post,
+    };
+  }
+
+  async createComment(
+    id: number,
+    params: ICreateComment
+  ): Promise<IResponse<IComment>> {
+    await this.getPostById(id);
+    const comment = await this._commentRepository.create(id, params);
+    return {
+      message: "Comment created successfully!",
+      status: 201,
+      data: comment,
+    };
   }
 }
 

@@ -1,9 +1,4 @@
-import {
-  ICreateUser,
-  IGetUserByEmail,
-  IUser,
-  IUserRepository,
-} from "../interfaces/user";
+import { ICreateUser, IUser, IUserRepository } from "../interfaces/user";
 import { injectable } from "inversify";
 import prisma from "../config/database";
 
@@ -26,14 +21,9 @@ class UserRepository implements IUserRepository {
     return user ? true : false;
   }
 
-  async getUserByEmail(email: string): Promise<IGetUserByEmail> {
+  async getUserByEmail(email: string): Promise<IUser | null> {
     return prisma.user.findFirst({
       where: { email },
-      select: {
-        id: true,
-        email: true,
-        password: true,
-      },
     });
   }
 }

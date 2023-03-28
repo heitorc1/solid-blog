@@ -7,41 +7,55 @@ import * as httpMocks from "node-mocks-http";
 const controller = container.get<PostController>(TYPES.PostController);
 
 const post = {
-  title: "Test",
-  content: "My content",
-  published: true,
-  user: {
-    name: "Heitor",
-    email: "heitorcarneiro1@gmail.com",
+  message: "Success!",
+  status: 201,
+  data: {
+    title: "Test",
+    content: "My content",
+    published: true,
+    user: {
+      name: "Heitor",
+      email: "heitorcarneiro1@gmail.com",
+    },
   },
 };
 
 const index = {
-  data: [post],
-  pagination: {
-    page: 1,
-    perPage: 10,
-    total: 5,
+  message: "Success!",
+  status: 200,
+  data: {
+    data: [post.data],
+    pagination: {
+      page: 1,
+      perPage: 10,
+      total: 5,
+    },
   },
 };
 
 const postId = 1;
 
 const comment = {
-  text: "Nice post",
-  createdAt: new Date("2023-03-20 00:00:00"),
-  user: {
-    name: "Heitor",
+  message: "Comment created successfully!",
+  status: 201,
+  data: {
+    text: "Nice post",
+    createdAt: new Date("2023-03-20 00:00:00"),
+    user: {
+      name: "Heitor",
+    },
   },
 };
 
 jest.spyOn(PostService.prototype, "index").mockResolvedValue(index);
 jest.spyOn(PostService.prototype, "create").mockResolvedValue(post);
-jest.spyOn(PostService.prototype, "update").mockResolvedValue(post);
+jest
+  .spyOn(PostService.prototype, "update")
+  .mockResolvedValue({ ...post, status: 200 });
 jest.spyOn(PostService.prototype, "createComment").mockResolvedValue(comment);
 
 describe("index", () => {
-  it("should list posts with paginations params", async () => {
+  it("should list posts with pagination params", async () => {
     const request = httpMocks.createRequest({
       query: {
         page: "1",
@@ -57,7 +71,7 @@ describe("index", () => {
     expect(response.statusCode).toBe(200);
   });
 
-  it("should list posts without paginations params", async () => {
+  it("should list posts without pagination params", async () => {
     const request = httpMocks.createRequest();
 
     const response = httpMocks.createResponse();
@@ -68,7 +82,7 @@ describe("index", () => {
     expect(response.statusCode).toBe(200);
   });
 
-  it("should not list posts with invalid paginations params", async () => {
+  it("should not list posts with invalid pagination params", async () => {
     const request = httpMocks.createRequest({
       query: {
         page: "invalid",
@@ -101,7 +115,7 @@ describe("create", () => {
 
     await controller.create(request, response, next);
 
-    expect(response.statusCode).toBe(200);
+    expect(response.statusCode).toBe(201);
   });
 
   it("should not create a new post without title", async () => {
@@ -267,7 +281,10 @@ describe("update", () => {
 
 describe("delete", () => {
   it("should delete a post", async () => {
-    jest.spyOn(PostService.prototype, "delete").mockResolvedValue();
+    jest.spyOn(PostService.prototype, "delete").mockResolvedValue({
+      message: "Post deleted successfully!",
+      status: 200,
+    });
 
     const request = httpMocks.createRequest({
       params: {
@@ -301,7 +318,10 @@ describe("delete", () => {
   });
 
   it("should not delete a post if invalid id", async () => {
-    jest.spyOn(PostService.prototype, "delete").mockResolvedValue();
+    jest.spyOn(PostService.prototype, "delete").mockResolvedValue({
+      message: "Post deleted successfully!",
+      status: 200,
+    });
 
     const request = httpMocks.createRequest({
       params: {
@@ -320,7 +340,10 @@ describe("delete", () => {
 
 describe("getPostById", () => {
   it("should return a post", async () => {
-    jest.spyOn(PostService.prototype, "getPostById").mockResolvedValue(post);
+    jest.spyOn(PostService.prototype, "getPostById").mockResolvedValue({
+      ...post,
+      status: 200,
+    });
 
     const request = httpMocks.createRequest({
       params: {
@@ -356,10 +379,7 @@ describe("getPostById", () => {
       .spyOn(PostService.prototype, "getPostById")
       .mockRejectedValue(new Error());
 
-    const request = httpMocks.createRequest({
-      method: "GET",
-      url: `/post/${postId}`,
-    });
+    const request = httpMocks.createRequest();
 
     const response = httpMocks.createResponse();
     const next = jest.fn();
@@ -387,7 +407,7 @@ describe("createComment", () => {
 
     await controller.createComment(request, response, next);
 
-    expect(response.statusCode).toBe(200);
+    expect(response.statusCode).toBe(201);
   });
 
   it("should not create a new comment without text", async () => {

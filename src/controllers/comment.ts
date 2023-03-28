@@ -23,8 +23,8 @@ class CommentController implements ICommentController {
         .object({ text: z.string().min(3).max(400) })
         .parse(body);
 
-      const comment = await this._service.update(validatedId, validatedBody);
-      res.json(comment);
+      const response = await this._service.update(validatedId, validatedBody);
+      res.status(response.status).json(response);
     } catch (error) {
       next(error);
     }
@@ -35,8 +35,8 @@ class CommentController implements ICommentController {
 
     try {
       const validatedId = z.coerce.number().parse(id);
-      await this._service.delete(validatedId);
-      res.json({ message: "Comment deleted successfully!" });
+      const response = await this._service.delete(validatedId);
+      res.status(response.status).json(response);
     } catch (error) {
       next(error);
     }

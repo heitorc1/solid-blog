@@ -1,4 +1,5 @@
 import { Controller } from "./controller";
+import { IResponse } from "./response";
 
 export interface IComment {
   text: string;
@@ -23,9 +24,8 @@ export interface ICommentController {
 }
 
 export interface ICommentService {
-  update: (id: number, params: IUpdateComment) => Promise<IComment>;
-  delete: (id: number) => Promise<void>;
-  getById: (id: number) => Promise<IComment>;
+  update: (id: number, params: IUpdateComment) => Promise<IResponse<IComment>>;
+  delete: (id: number) => Promise<IResponse<void>>;
 }
 
 export interface ICommentRepository {

@@ -1,6 +1,7 @@
-import { IComment } from "./comment";
+import { IComment, ICreateComment } from "./comment";
 import { Controller } from "./controller";
 import { IPagination } from "./pagination";
+import { IResponse } from "./response";
 
 export interface IPost {
   title: string;
@@ -35,11 +36,15 @@ export interface IPostController {
 }
 
 export interface IPostService {
-  index: (page: number, perPage: number) => Promise<IListPost>;
-  create: (params: ICreatePost) => Promise<IPost>;
-  update: (id: number, params: ICreatePost) => Promise<IPost>;
-  delete: (id: number) => Promise<void>;
-  getPostById: (id: number) => Promise<IPost>;
+  index: (page: number, perPage: number) => Promise<IResponse<IListPost>>;
+  create: (params: ICreatePost) => Promise<IResponse<IPost>>;
+  update: (id: number, params: ICreatePost) => Promise<IResponse<IPost>>;
+  delete: (id: number) => Promise<IResponse<void>>;
+  getPostById: (id: number) => Promise<IResponse<IPost>>;
+  createComment: (
+    id: number,
+    params: ICreateComment
+  ) => Promise<IResponse<IComment>>;
 }
 
 export interface IPostRepository {

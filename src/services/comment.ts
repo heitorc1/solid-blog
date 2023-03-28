@@ -6,6 +6,7 @@ import {
   ICommentService,
   IUpdateComment,
 } from "../interfaces/comment";
+import { IResponse } from "../interfaces/response";
 import CommentRepository from "../repositories/comments";
 
 @injectable()
@@ -16,18 +17,29 @@ class CommentService implements ICommentService {
     this._repository = repository;
   }
 
-  async update(id: number, params: IUpdateComment): Promise<IComment> {
-    await this.getById(id);
-    return this._repository.update(id, params);
+  async update(
+    id: number,
+    params: IUpdateComment
+  ): Promise<IResponse<IComment>> {
+    await this._getById(id);
+    const comment = await this._repository.update(id, params);
+    return {
+      message: "Post updated successfully!",
+      status: 200,
+      data: comment,
+    };
   }
 
-  async delete(id: number): Promise<void> {
-    await this.getById(id);
+  async delete(id: number): Promise<IResponse<void>> {
+    await this._getById(id);
     await this._repository.delete(id);
-    return;
+    return {
+      message: "Post deleted successfully!",
+      status: 200,
+    };
   }
 
-  async getById(id: number): Promise<IComment> {
+  private async _getById(id: number): Promise<IComment> {
     const comment = await this._repository.getCommentById(id);
     if (!comment) {
       throw new InvalidCommentError("Comment not found", 404);

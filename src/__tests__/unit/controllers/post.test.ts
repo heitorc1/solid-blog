@@ -43,8 +43,6 @@ jest.spyOn(PostService.prototype, "createComment").mockResolvedValue(comment);
 describe("index", () => {
   it("should list posts with paginations params", async () => {
     const request = httpMocks.createRequest({
-      method: "GET",
-      url: "/post",
       query: {
         page: "1",
         perPage: "10",
@@ -60,10 +58,7 @@ describe("index", () => {
   });
 
   it("should list posts without paginations params", async () => {
-    const request = httpMocks.createRequest({
-      method: "GET",
-      url: "/post",
-    });
+    const request = httpMocks.createRequest();
 
     const response = httpMocks.createResponse();
     const next = jest.fn();
@@ -75,8 +70,6 @@ describe("index", () => {
 
   it("should not list posts with invalid paginations params", async () => {
     const request = httpMocks.createRequest({
-      method: "GET",
-      url: "/post",
       query: {
         page: "invalid",
         perPage: "invalid",
@@ -95,8 +88,6 @@ describe("index", () => {
 describe("create", () => {
   it("should create a new post", async () => {
     const request = httpMocks.createRequest({
-      method: "POST",
-      url: "/post",
       body: {
         title: "Test",
         content: "My content",
@@ -115,8 +106,6 @@ describe("create", () => {
 
   it("should not create a new post without title", async () => {
     const request = httpMocks.createRequest({
-      method: "POST",
-      url: "/post",
       body: {
         content: "My content",
         published: true,
@@ -134,8 +123,6 @@ describe("create", () => {
 
   it("should not create a new post without content", async () => {
     const request = httpMocks.createRequest({
-      method: "POST",
-      url: "/post",
       body: {
         title: "Test",
         published: true,
@@ -153,8 +140,6 @@ describe("create", () => {
 
   it("should not create a new post without published status", async () => {
     const request = httpMocks.createRequest({
-      method: "POST",
-      url: "/post",
       body: {
         title: "Test",
         content: "My content",
@@ -172,8 +157,6 @@ describe("create", () => {
 
   it("should not create a new post without user", async () => {
     const request = httpMocks.createRequest({
-      method: "POST",
-      url: "/post",
       body: {
         title: "Test",
         content: "My content",
@@ -193,10 +176,11 @@ describe("create", () => {
 describe("update", () => {
   it("should update a post", async () => {
     const request = httpMocks.createRequest({
-      method: "PUT",
-      url: `/post/${postId}`,
       body: {
         published: false,
+      },
+      params: {
+        id: postId,
       },
     });
 
@@ -208,12 +192,67 @@ describe("update", () => {
     expect(response.statusCode).toBe(200);
   });
 
-  it("should not update a post with invalid parameters", async () => {
+  it("should not update a post with invalid title", async () => {
     const request = httpMocks.createRequest({
-      method: "PUT",
-      url: `/post/${postId}`,
+      body: {
+        title: 1234,
+      },
+      params: {
+        id: postId,
+      },
+    });
+
+    const response = httpMocks.createResponse();
+    const next = jest.fn();
+
+    await controller.update(request, response, next);
+
+    expect(next).toBeCalled();
+  });
+
+  it("should not update a post with invalid published", async () => {
+    const request = httpMocks.createRequest({
       body: {
         published: "false",
+      },
+      params: {
+        id: postId,
+      },
+    });
+
+    const response = httpMocks.createResponse();
+    const next = jest.fn();
+
+    await controller.update(request, response, next);
+
+    expect(next).toBeCalled();
+  });
+
+  it("should not update a post with invalid content", async () => {
+    const request = httpMocks.createRequest({
+      body: {
+        content: false,
+      },
+      params: {
+        id: postId,
+      },
+    });
+
+    const response = httpMocks.createResponse();
+    const next = jest.fn();
+
+    await controller.update(request, response, next);
+
+    expect(next).toBeCalled();
+  });
+
+  it("should not update a post with invalid id", async () => {
+    const request = httpMocks.createRequest({
+      body: {
+        content: "new content",
+      },
+      params: {
+        id: "invalid",
       },
     });
 
@@ -231,8 +270,9 @@ describe("delete", () => {
     jest.spyOn(PostService.prototype, "delete").mockResolvedValue();
 
     const request = httpMocks.createRequest({
-      method: "DELETE",
-      url: `/post/${postId}`,
+      params: {
+        id: postId,
+      },
     });
 
     const response = httpMocks.createResponse();
@@ -247,8 +287,26 @@ describe("delete", () => {
     jest.spyOn(PostService.prototype, "delete").mockRejectedValue(new Error());
 
     const request = httpMocks.createRequest({
-      method: "DELETE",
-      url: `/post/130`,
+      params: {
+        id: 130,
+      },
+    });
+
+    const response = httpMocks.createResponse();
+    const next = jest.fn();
+
+    await controller.delete(request, response, next);
+
+    expect(next).toBeCalled();
+  });
+
+  it("should not delete a post if invalid id", async () => {
+    jest.spyOn(PostService.prototype, "delete").mockResolvedValue();
+
+    const request = httpMocks.createRequest({
+      params: {
+        id: "invalid",
+      },
     });
 
     const response = httpMocks.createResponse();
@@ -265,8 +323,9 @@ describe("getPostById", () => {
     jest.spyOn(PostService.prototype, "getPostById").mockResolvedValue(post);
 
     const request = httpMocks.createRequest({
-      method: "GET",
-      url: `/post/${postId}`,
+      params: {
+        id: postId,
+      },
     });
 
     const response = httpMocks.createResponse();
@@ -275,6 +334,21 @@ describe("getPostById", () => {
     await controller.getPostById(request, response, next);
 
     expect(response.statusCode).toBe(200);
+  });
+
+  it("should not return a post if id is invalid", async () => {
+    const request = httpMocks.createRequest({
+      params: {
+        id: "invalid",
+      },
+    });
+
+    const response = httpMocks.createResponse();
+    const next = jest.fn();
+
+    await controller.getPostById(request, response, next);
+
+    expect(next).toBeCalled();
   });
 
   it("should return an error if post not found", async () => {
@@ -299,11 +373,12 @@ describe("getPostById", () => {
 describe("createComment", () => {
   it("should create a new comment", async () => {
     const request = httpMocks.createRequest({
-      method: "POST",
-      url: `/post/${postId}/comments`,
       body: {
         text: "Nice post",
         userId: 1,
+      },
+      params: {
+        id: postId,
       },
     });
 
@@ -317,10 +392,11 @@ describe("createComment", () => {
 
   it("should not create a new comment without text", async () => {
     const request = httpMocks.createRequest({
-      method: "POST",
-      url: `/post/${postId}/comments`,
       body: {
         userId: 1,
+      },
+      params: {
+        id: postId,
       },
     });
 
@@ -334,10 +410,29 @@ describe("createComment", () => {
 
   it("should not create a new comment without user", async () => {
     const request = httpMocks.createRequest({
-      method: "POST",
-      url: `/post/${postId}/comments`,
       body: {
         text: "Nice post",
+      },
+      params: {
+        id: postId,
+      },
+    });
+
+    const response = httpMocks.createResponse();
+    const next = jest.fn();
+
+    await controller.createComment(request, response, next);
+
+    expect(next).toBeCalled();
+  });
+
+  it("should not create a new comment with invalid id", async () => {
+    const request = httpMocks.createRequest({
+      body: {
+        text: "Nice post",
+      },
+      params: {
+        id: "invalid",
       },
     });
 

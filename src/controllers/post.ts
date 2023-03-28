@@ -59,13 +59,14 @@ class PostController implements IPostController {
     const body = req.body;
 
     try {
+      const validatedId = z.coerce.number().parse(id);
       z.object({
         title: z.string().optional(),
         content: z.string().optional(),
         published: z.boolean().optional(),
       }).parse(body);
 
-      const post = await this._service.update(parseInt(id), body);
+      const post = await this._service.update(validatedId, body);
       res.json(post);
     } catch (error) {
       next(error);
@@ -76,7 +77,8 @@ class PostController implements IPostController {
     const { id } = req.params;
 
     try {
-      await this._service.delete(parseInt(id));
+      const validatedId = z.coerce.number().parse(id);
+      await this._service.delete(validatedId);
       res.json({ message: "Post deleted successfully!" });
     } catch (error) {
       next(error);
@@ -87,7 +89,8 @@ class PostController implements IPostController {
     const { id } = req.params;
 
     try {
-      const post = await this._service.getPostById(parseInt(id));
+      const validatedId = z.coerce.number().parse(id);
+      const post = await this._service.getPostById(validatedId);
       res.json(post);
     } catch (error) {
       next(error);
@@ -99,6 +102,7 @@ class PostController implements IPostController {
     const body = req.body;
 
     try {
+      const validatedId = z.coerce.number().parse(id);
       const validatedData = z
         .object({
           text: z.string(),
@@ -107,7 +111,7 @@ class PostController implements IPostController {
         .parse(body);
 
       const comment = await this._service.createComment(
-        parseInt(id),
+        validatedId,
         validatedData
       );
       res.json(comment);

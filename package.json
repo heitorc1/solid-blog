@@ -5,6 +5,7 @@
     "dev": "ts-node-dev --respawn --transpile-only --exit-child src/index.ts",
     "build": "tsc",
     "test": "jest",
+    "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "prepare": "husky install"
   },

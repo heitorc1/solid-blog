@@ -11,6 +11,7 @@
     "types": ["reflect-metadata", "jest", "node"],
     "moduleResolution": "node",
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "preserveSymlinks": false
   }
 }

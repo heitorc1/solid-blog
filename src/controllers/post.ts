@@ -85,12 +85,12 @@ class PostController implements IPostController {
     }
   }
 
-  async getPostById(req: Request, res: Response, next: NextFunction) {
+  async getPost(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
 
     try {
       const validatedId = z.coerce.number().parse(id);
-      const response = await this._service.getPostById(validatedId);
+      const response = await this._service.getPost(validatedId);
       res.status(response.status).json(response);
     } catch (error) {
       next(error);

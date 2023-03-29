@@ -31,7 +31,7 @@ export interface IPostController {
   create: Controller<void>;
   update: Controller<void>;
   delete: Controller<void>;
-  getPostById: Controller<void>;
+  getPost: Controller<void>;
   createComment: Controller<void>;
 }
 
@@ -40,7 +40,7 @@ export interface IPostService {
   create: (params: ICreatePost) => Promise<IResponse<IPost>>;
   update: (id: number, params: ICreatePost) => Promise<IResponse<IPost>>;
   delete: (id: number) => Promise<IResponse<void>>;
-  getPostById: (id: number) => Promise<IResponse<IPost>>;
+  getPost: (id: number) => Promise<IResponse<IPost>>;
   createComment: (
     id: number,
     params: ICreateComment

@@ -338,9 +338,9 @@ describe("delete", () => {
   });
 });
 
-describe("getPostById", () => {
+describe("getPost", () => {
   it("should return a post", async () => {
-    jest.spyOn(PostService.prototype, "getPostById").mockResolvedValue({
+    jest.spyOn(PostService.prototype, "getPost").mockResolvedValue({
       ...post,
       status: 200,
     });
@@ -354,7 +354,7 @@ describe("getPostById", () => {
     const response = httpMocks.createResponse();
     const next = jest.fn();
 
-    await controller.getPostById(request, response, next);
+    await controller.getPost(request, response, next);
 
     expect(response.statusCode).toBe(200);
   });
@@ -369,22 +369,20 @@ describe("getPostById", () => {
     const response = httpMocks.createResponse();
     const next = jest.fn();
 
-    await controller.getPostById(request, response, next);
+    await controller.getPost(request, response, next);
 
     expect(next).toBeCalled();
   });
 
   it("should return an error if post not found", async () => {
-    jest
-      .spyOn(PostService.prototype, "getPostById")
-      .mockRejectedValue(new Error());
+    jest.spyOn(PostService.prototype, "getPost").mockRejectedValue(new Error());
 
     const request = httpMocks.createRequest();
 
     const response = httpMocks.createResponse();
     const next = jest.fn();
 
-    await controller.getPostById(request, response, next);
+    await controller.getPost(request, response, next);
 
     expect(next).toBeCalled();
   });

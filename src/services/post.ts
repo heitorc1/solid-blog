@@ -43,8 +43,11 @@ class PostService implements IPostService {
     };
   }
 
-  async update(id: number, params: ICreatePost): Promise<IResponse<IPost>> {
-    await this.getPostById(id);
+  async update(
+    id: number,
+    params: Partial<ICreatePost>
+  ): Promise<IResponse<IPost>> {
+    await this._checkIfPostExists(id);
     const post = await this._repository.update(id, params);
     return {
       message: "Post updated successfully!",
@@ -54,7 +57,7 @@ class PostService implements IPostService {
   }
 
   async delete(id: number): Promise<IResponse<void>> {
-    await this.getPostById(id);
+    await this._checkIfPostExists(id);
     await this._repository.delete(id);
     return {
       message: "Post deleted successfully!",
@@ -62,11 +65,8 @@ class PostService implements IPostService {
     };
   }
 
-  async getPostById(id: number): Promise<IResponse<IPost>> {
-    const post = await this._repository.findPostById(id);
-    if (!post) {
-      throw new InvalidPostError("Post not found", 404);
-    }
+  async getPost(id: number): Promise<IResponse<IPost>> {
+    const post = await this._checkIfPostExists(id);
     return {
       message: "Success!",
       status: 200,
@@ -78,13 +78,21 @@ class PostService implements IPostService {
     id: number,
     params: ICreateComment
   ): Promise<IResponse<IComment>> {
-    await this.getPostById(id);
+    await this._checkIfPostExists(id);
     const comment = await this._commentRepository.create(id, params);
     return {
       message: "Comment created successfully!",
       status: 201,
       data: comment,
     };
+  }
+
+  private async _checkIfPostExists(id: number): Promise<IPost> {
+    const post = await this._repository.findPostById(id);
+    if (!post) {
+      throw new InvalidPostError("Post not found", 404);
+    }
+    return post;
   }
 }
 

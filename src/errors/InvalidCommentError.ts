@@ -1,16 +1,3 @@
-export default class InvalidCommentError extends Error {
-  private statusCode: number;
+import { CustomError } from "../abstracts/error";
 
-  constructor(message: string, statusCode: number) {
-    super();
-    this.message = message;
-    this.statusCode = statusCode;
-  }
-
-  public toJSON() {
-    return {
-      statusCode: this.statusCode,
-      message: this.message,
-    };
-  }
-}
+export default class InvalidCommentError extends CustomError {}

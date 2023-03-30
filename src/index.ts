@@ -4,6 +4,7 @@ import { authenticate } from "./middlewares/authentication";
 import commentRouter from "./routes/comment";
 import postRouter from "./routes/post";
 import userRouter from "./routes/user";
+import { CustomError } from "./abstracts/error";
 
 const app = express();
 const port = 8080;
@@ -24,8 +25,8 @@ app.use((error: any, _req: Request, res: Response, _next: NextFunction) => {
     return res.status(422).json(error);
   }
 
-  if (error.toJSON) {
-    return res.status(error.statusCode).json({ message: error.message });
+  if (error instanceof CustomError) {
+    return res.status(error.status).json(error.toJSON());
   }
   console.error(error);
   res.status(500).json(error);

@@ -10,7 +10,7 @@ postRouter.get("/", controller.index.bind(controller));
 postRouter.post("/", controller.create.bind(controller));
 postRouter.put("/:id", controller.update.bind(controller));
 postRouter.delete("/:id", controller.delete.bind(controller));
-postRouter.get("/:id", controller.getPostById.bind(controller));
+postRouter.get("/:id", controller.getPost.bind(controller));
 postRouter.post("/:id/comments", controller.createComment.bind(controller));
 
 export default postRouter;

@@ -1,36 +1,21 @@
-import express, { NextFunction, Request, Response } from "express";
-import { ZodError } from "zod";
-import { authenticate } from "./middlewares/authentication";
-import commentRouter from "./routes/comment";
-import postRouter from "./routes/post";
-import userRouter from "./routes/user";
-import { CustomError } from "./abstracts/error";
+import cors from "cors";
+import express from "express";
+import helmet from "helmet";
+import { errorHandler } from "./middlewares/errorHandler";
+import router from "./routes";
 
 const app = express();
 const port = 8080;
 
+app.use(helmet());
+app.use(cors());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/users", userRouter);
+app.use(router);
 
-app.use(authenticate);
-
-app.use("/posts", postRouter);
-app.use("/comments", commentRouter);
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
-app.use((error: any, _req: Request, res: Response, _next: NextFunction) => {
-  if (error instanceof ZodError) {
-    return res.status(422).json(error);
-  }
-
-  if (error instanceof CustomError) {
-    return res.status(error.status).json(error.toJSON());
-  }
-  console.error(error);
-  res.status(500).json(error);
-});
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`server running on port ${port}`);

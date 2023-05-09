@@ -1,11 +1,12 @@
 import { NextFunction, Request, Response } from "express";
-import { inject, injectable } from "inversify";
+import { inject } from "inversify";
 import { z } from "zod";
 import { TYPES } from "../config/types";
 import { ICommentController } from "../interfaces/comment";
 import CommentService from "../services/comment";
+import { controller, httpDelete, httpPut } from "inversify-express-utils";
 
-@injectable()
+@controller("/comments", TYPES.AuthenticationMiddleware)
 class CommentController implements ICommentController {
   private _service: CommentService;
 
@@ -13,6 +14,7 @@ class CommentController implements ICommentController {
     this._service = service;
   }
 
+  @httpPut("/:id")
   async update(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
     const body = req.body;
@@ -30,6 +32,7 @@ class CommentController implements ICommentController {
     }
   }
 
+  @httpDelete("/:id")
   async delete(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
 

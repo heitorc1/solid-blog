@@ -14,4 +14,6 @@ export const TYPES = {
   CategoryController: Symbol.for("CategoryController"),
   CategoryService: Symbol.for("CategoryService"),
   CategoryRepository: Symbol.for("CategoryRepository"),
+
+  AuthenticationMiddleware: Symbol.for("AuthenticationMiddleware"),
 };

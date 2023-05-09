@@ -33,6 +33,8 @@ import {
 import CategoryController from "../controllers/category";
 import CategoryService from "../services/category";
 import CategoryRepository from "../repositories/category";
+import AuthenticationMiddleware from "../middlewares/authentication";
+import { IAuthentication } from "../interfaces/authentication";
 
 const container = new Container();
 
@@ -59,5 +61,9 @@ container.bind<ICategoryService>(TYPES.CategoryService).to(CategoryService);
 container
   .bind<ICategoryRepository>(TYPES.CategoryRepository)
   .to(CategoryRepository);
+
+container
+  .bind<IAuthentication>(TYPES.AuthenticationMiddleware)
+  .to(AuthenticationMiddleware);
 
 export default container;

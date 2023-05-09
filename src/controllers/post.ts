@@ -1,12 +1,18 @@
-import { injectable } from "inversify";
 import PostService from "../services/post";
 import { inject } from "inversify";
 import { TYPES } from "../config/types";
 import { NextFunction, Request, Response } from "express";
 import { z } from "zod";
 import { IPostController } from "../interfaces/post";
+import {
+  controller,
+  httpDelete,
+  httpGet,
+  httpPost,
+  httpPut,
+} from "inversify-express-utils";
 
-@injectable()
+@controller("/posts", TYPES.AuthenticationMiddleware)
 class PostController implements IPostController {
   private _service: PostService;
 
@@ -14,6 +20,7 @@ class PostController implements IPostController {
     this._service = service;
   }
 
+  @httpGet("/")
   async index(req: Request, res: Response, next: NextFunction) {
     const params = req.query;
 
@@ -35,6 +42,7 @@ class PostController implements IPostController {
     }
   }
 
+  @httpPost("/")
   async create(req: Request, res: Response, next: NextFunction) {
     const body = req.body;
 
@@ -54,6 +62,7 @@ class PostController implements IPostController {
     }
   }
 
+  @httpPut("/:id")
   async update(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
     const body = req.body;
@@ -73,6 +82,7 @@ class PostController implements IPostController {
     }
   }
 
+  @httpDelete("/:id")
   async delete(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
 
@@ -85,6 +95,7 @@ class PostController implements IPostController {
     }
   }
 
+  @httpGet("/:id")
   async getPost(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
 
@@ -97,6 +108,7 @@ class PostController implements IPostController {
     }
   }
 
+  @httpPost("/:id/comments")
   async createComment(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
     const body = req.body;

@@ -1,11 +1,12 @@
 import { NextFunction, Request, Response } from "express";
-import { inject, injectable } from "inversify";
+import { inject } from "inversify";
 import { z } from "zod";
 import { TYPES } from "../config/types";
 import { IUserController } from "../interfaces/user";
 import UserService from "../services/user";
+import { controller, httpPost } from "inversify-express-utils";
 
-@injectable()
+@controller("/users")
 class UserController implements IUserController {
   private _service: UserService;
 
@@ -13,6 +14,7 @@ class UserController implements IUserController {
     this._service = service;
   }
 
+  @httpPost("/create")
   async create(req: Request, res: Response, next: NextFunction): Promise<void> {
     const body = req.body;
 
@@ -32,6 +34,7 @@ class UserController implements IUserController {
     }
   }
 
+  @httpPost("/login")
   async login(req: Request, res: Response, next: NextFunction): Promise<void> {
     const body = req.body;
 

@@ -25,6 +25,14 @@ import {
   ICommentRepository,
   ICommentService,
 } from "../interfaces/comment";
+import {
+  ICategoryController,
+  ICategoryRepository,
+  ICategoryService,
+} from "../interfaces/category";
+import CategoryController from "../controllers/category";
+import CategoryService from "../services/category";
+import CategoryRepository from "../repositories/category";
 
 const container = new Container();
 
@@ -43,5 +51,13 @@ container.bind<ICommentService>(TYPES.CommentService).to(CommentService);
 container
   .bind<ICommentRepository>(TYPES.CommentRepository)
   .to(CommentRepository);
+
+container
+  .bind<ICategoryController>(TYPES.CategoryController)
+  .to(CategoryController);
+container.bind<ICategoryService>(TYPES.CategoryService).to(CategoryService);
+container
+  .bind<ICategoryRepository>(TYPES.CategoryRepository)
+  .to(CategoryRepository);
 
 export default container;

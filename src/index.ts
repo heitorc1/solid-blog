@@ -8,21 +8,19 @@ import { InversifyExpressServer } from "inversify-express-utils";
 import container from "./config/container";
 
 const server = new InversifyExpressServer(container);
-
-server.setConfig((app) => {
-  app.use(helmet());
-  app.use(cors());
-  app.use(morgan("dev"));
-
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
-
-  app.use(errorHandler);
-});
-
-const app = server.build();
 const port = 8080;
 
-app.listen(port, () => {
-  console.log(`server running on port ${port}`);
-});
+server
+  .setConfig((app) => {
+    app.use(helmet());
+    app.use(cors());
+    app.use(morgan("dev"));
+
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: true }));
+  })
+  .setErrorConfig((app) => {
+    app.use(errorHandler);
+  })
+  .build()
+  .listen(port, () => console.log(`server running on port ${port}`));

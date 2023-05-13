@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { Container } from "inversify";
+import { AsyncContainerModule, Container } from "inversify";
 import { TYPES } from "./types";
 import UserController from "../controllers/user";
 import UserRepository from "../repositories/user";
@@ -36,34 +36,29 @@ import CategoryRepository from "../repositories/category";
 import AuthenticationMiddleware from "../middlewares/authentication";
 import { IAuthentication } from "../interfaces/authentication";
 
+export const bindings = new AsyncContainerModule(async (bind) => {
+  bind<IUserController>(TYPES.UserController).to(UserController);
+  bind<IUserService>(TYPES.UserService).to(UserService);
+  bind<IUserRepository>(TYPES.UserRepository).to(UserRepository);
+
+  bind<IPostController>(TYPES.PostController).to(PostController);
+  bind<IPostService>(TYPES.PostService).to(PostService);
+  bind<IPostRepository>(TYPES.PostRepository).to(PostRepository);
+
+  bind<ICommentController>(TYPES.CommentController).to(CommentController);
+  bind<ICommentService>(TYPES.CommentService).to(CommentService);
+  bind<ICommentRepository>(TYPES.CommentRepository).to(CommentRepository);
+
+  bind<ICategoryController>(TYPES.CategoryController).to(CategoryController);
+  bind<ICategoryService>(TYPES.CategoryService).to(CategoryService);
+  bind<ICategoryRepository>(TYPES.CategoryRepository).to(CategoryRepository);
+
+  bind<IAuthentication>(TYPES.AuthenticationMiddleware).to(
+    AuthenticationMiddleware
+  );
+});
+
 const container = new Container();
-
-container.bind<IUserController>(TYPES.UserController).to(UserController);
-container.bind<IUserService>(TYPES.UserService).to(UserService);
-container.bind<IUserRepository>(TYPES.UserRepository).to(UserRepository);
-
-container.bind<IPostController>(TYPES.PostController).to(PostController);
-container.bind<IPostService>(TYPES.PostService).to(PostService);
-container.bind<IPostRepository>(TYPES.PostRepository).to(PostRepository);
-
-container
-  .bind<ICommentController>(TYPES.CommentController)
-  .to(CommentController);
-container.bind<ICommentService>(TYPES.CommentService).to(CommentService);
-container
-  .bind<ICommentRepository>(TYPES.CommentRepository)
-  .to(CommentRepository);
-
-container
-  .bind<ICategoryController>(TYPES.CategoryController)
-  .to(CategoryController);
-container.bind<ICategoryService>(TYPES.CategoryService).to(CategoryService);
-container
-  .bind<ICategoryRepository>(TYPES.CategoryRepository)
-  .to(CategoryRepository);
-
-container
-  .bind<IAuthentication>(TYPES.AuthenticationMiddleware)
-  .to(AuthenticationMiddleware);
+container.loadAsync(bindings);
 
 export default container;
